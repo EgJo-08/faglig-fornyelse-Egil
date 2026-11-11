@@ -127,7 +127,10 @@ while True:
 
         for snake_part in snake:
             pygame.draw.rect(window, "green", snake_part)
-     
+          
+            #counter text
+        counter_text = font.render(f"Count: {len(snake) - 1}", True, "white")
+        window.blit(counter_text, (10, 10))
 
     else:
 
@@ -137,8 +140,6 @@ while True:
 
         window.blit(lose_text, lose_rect)
 
-        #counter text
-        counter_text = font.render(f"Count: {len(snake)}", True, "white")
 
         # Retry button
         pygame.draw.rect(window, "white", retry_button)
@@ -150,4 +151,5 @@ while True:
        
 
     pygame.display.update()
-    clock.tick(10)
+    #ændre hastighed her
+    clock.tick(15)
