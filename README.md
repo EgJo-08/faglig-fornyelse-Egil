@@ -1,63 +1,156 @@
-**FAGLIG FORNYELSE**
+Kom godt i gang med Snake i Pygame
+1. Introduktion
+I denne guide gennemgår vi de vigtigste dele af et Snake-spil lavet med Python og Pygame.
 
-# Undersøg en - for dig - ukendt teknologi
+Vi kommer ind på, hvordan man opretter spillet, styrer slangen, laver mad, registrerer kollisioner og håndterer Game Over.
+2. Import af biblioteker
+Først importerer vi de biblioteker, vi skal bruge.
 
-I faget faglig fornyelse skal du igennem egen research tilegne dig viden om en relevante udviklingstendens, det kan for eksempel være et framework, bibliotek, et SDK (software development kit) eller noget fjerde som du kan benytte til at skabe et produkt som er relevant for din fagfaglige praksis, e.g. website, app etc.
+```python
+import pygame
+from sys import exit
+import random
+```
+- pygame bruges til at lave selve spillet.
+- sys bruges til at afslutte programmet.
+- random bruges til tilfældige placeringer af maden.
+3. Spillets størrelse
+Vi bestemmer størrelsen på spillet ved at bruge rækker, kolonner og størrelsen på hvert felt.
 
-Det er et krav at du ikke fra tidligere undervisning har kendskab til den teknologi du vælger at fordybe dig i.
-Det er ligeledes et krav at du ikke "bare" følger en tutorial. Det kan være en god måde at komme i gang på, men det er vigtigt at du bruger den viden du får undervejs til at udvide produktet med egne features og at du kan påpege disse features i din gennemgang af produktet ved evaluering.
+```python
+ROWS = 25
+COLUMNS = ROWS
+TILE_SIZE = 25
 
+GAME_WIDTH = TILE_SIZE * COLUMNS
+GAME_HEIGHT = TILE_SIZE * ROWS
+```
 
-## Formål:
-Virksomheder kan arbejde med forskellige teknologier afhængigt af deres branche og behov. Ved at have en bredere viden om forskellige teknologier bliver du bedre rustet til at tilpasse dig og lære nye teknologier hurtigere, hvis det bliver nødvendigt.
+Spillet bliver 625 × 625 pixels. Ved at bruge TILE_SIZE sikrer vi, at slangen altid bevæger sig ét felt ad gangen.
+4. Oprettelse af spilvinduet
+Nu opretter vi selve spilvinduet.
 
-Det er en central del af fagets formål at styrke din evne til at arbejde uafhængigt og opsøge ny viden på egen hånd inden for din praksis fagområde. Der lægges vægt på, at du kan forholde dig kritisk og reflekterende til nye teknologier, herunder generativ kunstig intelligens.
+```python
+pygame.init()
 
+window = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
+pygame.display.set_caption("Snake")
 
-## Mål:
-Efter afslutningen af faget forventes det, at du har opnået følgende mål:
+clock = pygame.time.Clock()
+```
 
-1.	undersøge og tilegne dig viden om nye teknologiske udviklingstendenser inden for webudvikling, herunder AI-baserede værktøjer
-2.	anvende den nye viden i praksis gennem udvikling af konkrete eksempler og løsninger.
-3.	redegøre for teknologiens muligheder og begrænsninger samt forholde dig kritisk til dens anvendelse.
+pygame.init() starter Pygame, mens set_mode() opretter vinduet. clock bruges til at styre spillets hastighed.
+5. Slangen og maden
+Slangen oprettes som en liste, hvor hver kropsdel er et rektangel.
 
+```python
+snake = []
 
-## Opgavebeskrivelse:
-1. **Valg af emne:**
-* Vælg en teknologi fx. framework, bibliotek, et SDK
-* Vælg et specifikt emne inden for en af disse teknologier, som du ønsker at udforske og arbejde med.
-* Afklar dit valgte emne med underviseren og få bekræftet, at det passer inden for fagets rammer og mål.
+snake.append(
+    pygame.Rect(100, 100, TILE_SIZE, TILE_SIZE)
+)
+```
 
-2.	**Informationsindsamling:**
-* Lav en indledende undersøgelse af det valgte emne. Opsøg fx relevante artikler, blogs, tutorials, dokumentation og andre kilder for at få en grundlæggende forståelse for teknologien.
+Maden får en tilfældig placering ved hjælp af denne funktion:
 
-3.	**Udvælgelse af en konkrete problemstilling:**
-* Definer en specifik problemstilling eller opgave, som du vil arbejde med inden for det valgte emne.
-* Sikr dig, at problemstillingen er realistisk at løse inden for den tidsramme, du har til rådighed.
+```python
+def get_random(limit):
+    return random.randint(0, limit - 1) * TILE_SIZE
+```
 
-4.	**Udvikling af det konkrete produkt:**
-* Implementer og eksperimenter med den valgte teknologi for at løse den valgte problemstilling eller opgave.
+Vi ganger med TILE_SIZE, så maden altid placeres korrekt på spillebanens felter.
+6. Styring af slangen
+Vi bruger tastaturets KEYDOWN-event til at registrere spillerens input.
 
-5.	**Test:**
-* Test dit produkt grundigt for at sikre, at det fungerer som forventet inden endeligt push.
+```python
+if event.key in (pygame.K_UP, pygame.K_w):
+    if snake_velocity != (0, TILE_SIZE):
+        snake_velocity = (0, -TILE_SIZE)
+```
 
-6. **Præsentér:**
-* udarbejd et af nedenstående produkter:
-  1. en skriftlig rapport på mindst to A4 sider som beskriver teknologiens/værktøjets anvendelsesmuligheder
-  2. En video hvor du præsenterer dit produkt og fortæller om hvordan dit værktøj/teknologi gør webudviklerens hverdag nemmere
-  3. En ”kom-godt-i-gang-guide” til dine klassekammerater, som præsenterer dit produkt/teknologi, og fortæller om, hvad det er for et problem produktet/teknologien løser.
+Her bevæger slangen sig opad, hvis den ikke allerede bevæger sig nedad.
 
+Vi bruger samme princip til de andre retninger. Det forhindrer slangen i at vende direkte om og ramme sig selv.
+7. Bevægelse af slangen
+For at få slangens krop til at følge hovedet bruger vi et for-loop.
 
-6.	**Aflevering:**
-* Du afleverer ved at indsætte et link til dit repository på mitRTS sammen med din præsentation/rapport.
+```python
+for i in range(len(snake) - 1, 0, -1):
+    snake[i] = snake[i - 1].copy()
 
-**Varighed:** 
-10 dage
+snake[0].move_ip(snake_velocity)
+```
 
+Vi starter bagfra i listen, så hver kropsdel får den tidligere kropsdels position.
 
-**Afslutning:**
-På den sidste dag i forløbet afholder vi en udstilling / mini-fernisering, hvor du får mulighed for at se hvad de andre i klassen har arbejdet med.
+Til sidst flytter vi hovedet med move_ip().
+8. Mad og score
+Når slangens hoved rammer maden, skal slangen vokse.
 
-**Evaluering:**
-Faget afsluttes med en samlet karakter på 7 trins skalaen. Karakteren bliver tildelt ved afslutningen af faget og vil afspejle din samlede indsats, forståelse og evne til at anvende den nyerhvervede viden til at udarbejde et konkret produkt.
+```python
+if snake[0].center == food.center:
+    snake.append(old_tail)
+```
 
+Vi tilføjer en ny kropsdel ved at bruge append().
+
+Vi kan også bruge slangens længde til at vise spillerens score:
+
+```python
+counter_text = font.render(
+    f"Count: {len(snake) - 1}",
+    True,
+    "white"
+)
+window.blit(counter_text, (10, 10))
+```
+
+len(snake) finder slangens længde, og window.blit() viser teksten på skærmen.
+9. Kollisioner
+Vi skal registrere, hvis slangen rammer væggene eller sin egen krop.
+
+Kollision med væggen:
+
+```python
+if not window.get_rect().contains(snake[0]):
+    GAME_OVER = True
+```
+
+Kollision med sig selv:
+
+```python
+for part in snake[1:]:
+    if snake[0].colliderect(part):
+        GAME_OVER = True
+```
+
+Hvis en af kollisionerne sker, bliver GAME_OVER sat til True, og spillet slutter.
+10. Game Over og Retry
+Når spilleren taber, viser vi en Game Over-skærm og en Retry-knap.
+
+```python
+lose_text = font.render("YOU LOSE", True, "white")
+lose_rect = lose_text.get_rect(
+    center=(GAME_WIDTH // 2, 200)
+)
+
+window.blit(lose_text, lose_rect)
+```
+
+Vi registrerer et klik på Retry-knappen med:
+
+```python
+if GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
+    if retry_button.collidepoint(event.pos):
+        reset_game()
+```
+
+collidepoint() undersøger, om musen er placeret inden for knappen. Hvis den er, starter vi spillet forfra med reset_game().
+11. Spillets hastighed
+Til sidst bestemmer vi, hvor hurtigt spillet opdateres.
+
+```python
+clock.tick(15)
+```
+
+Tallet bestemmer spillets maksimale opdateringer pr. sekund. Jo højere tallet er, desto hurtigere bevæger slangen sig.
