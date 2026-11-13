@@ -83,9 +83,14 @@ while True:
                 snake_velocity = (TILE_SIZE, 0)
 
         # Retry button click
-        if GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
-            if retry_button.collidepoint(event.pos):
-                reset_game()
+        if GAME_OVER:
+           if event.type == pygame.MOUSEBUTTONDOWN:
+             if retry_button.collidepoint(event.pos):
+               reset_game()
+
+           if event.type == pygame.KEYDOWN:
+             if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+              reset_game()
 
     # Gameplay
     if not GAME_OVER:
@@ -152,4 +157,4 @@ while True:
 
     pygame.display.update()
     #ændre hastighed her
-    clock.tick(15)
+    clock.tick(50)
